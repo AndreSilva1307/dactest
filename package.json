@@ -1,0 +1,16 @@
+{
+  "name": "clinica-electron", 
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "electron": "^28.0.0",
+    "nedb": "^1.8.0"
+  }
+}
+
+

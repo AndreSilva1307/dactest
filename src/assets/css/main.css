@@ -1,0 +1,65 @@
+/* Importações principais de estilos */
+@import './base/reset.css'; /* Reset CSS para padronização entre navegadores */
+@import './base/variables.css'; /* Variáveis CSS globais (cores, tamanhos, etc.) */
+
+@import './components/buttons.css'; /* Estilos para botões */
+@import './components/forms.css'; /* Estilos para formulários e campos de entrada */
+@import './components/cards.css'; /* Estilos para cards e containers */
+
+@import './layouts/auth.css'; /* Estilos para páginas de autenticação (login/cadastro) */
+@import './layouts/dashboard.css'; /* Estilos para o dashboard (área logada) */
+
+/* Estilos globais adicionais, se houver */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background-color: var(--background-color, #f4f7f6); /* Cor de fundo padrão */
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Mensagens de feedback */
+.error-message {
+  background-color: var(--danger-color-light, #fdeded);
+  color: var(--danger-color, #e74c3c);
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--danger-color-border, #f5c6cb);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+}
+
+.success-message {
+  background-color: var(--success-color-light, #e6ffed);
+  color: var(--success-color, #2ecc71);
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--success-color-border, #c3e6cb);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+}
+
+/* Textos de carregamento e sem dados */
+.loading-text, .no-data, .error-text {
+    color: #777;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    background-color: #f9f9f9;
+    border-radius: var(--border-radius);
+    margin-top: 1rem;
+    font-style: italic;
+}
+
+.error-text {
+    color: var(--danger-color);
+    background-color: var(--danger-color-light);
+    border: 1px solid var(--danger-color-border);
+}

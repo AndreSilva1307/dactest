@@ -1,0 +1,115 @@
+/* forms.css - Estilos para formulários e seus elementos */
+
+.form-group {
+  margin-bottom: var(--spacing-lg, 1.5rem); /* Espaçamento entre grupos de formulário */
+}
+
+.form-group label {
+  display: block; /* Labels em sua própria linha */
+  margin-bottom: var(--spacing-sm, 0.5rem); /* Espaçamento abaixo do label */
+  font-weight: 600; /* Peso da fonte para labels */
+  color: var(--secondary-color); /* Cor do label */
+  font-size: 0.9rem;
+}
+
+.form-control {
+  display: block; /* Ocupa toda a largura disponível */
+  width: 100%;
+  padding: 0.75rem 1rem; /* Espaçamento interno */
+  font-size: 1rem; /* Tamanho da fonte */
+  line-height: 1.5; /* Altura da linha */
+  color: var(--text-color); /* Cor do texto do input */
+  background-color: #ffffff; /* Fundo do input */
+  background-clip: padding-box;
+  border: 1px solid var(--border-color, #ced4da); /* Borda do input */
+  border-radius: var(--border-radius); /* Bordas arredondadas */
+  transition: border-color var(--transition-speed) ease-in-out, box-shadow var(--transition-speed) ease-in-out;
+}
+
+.form-control:focus {
+  color: var(--text-color);
+  background-color: #ffffff;
+  border-color: var(--primary-color); /* Muda a cor da borda no foco */
+  outline: 0; /* Remove o outline padrão */
+  /* Sombra sutil no foco para destaque */
+  box-shadow: 0 0 0 0.2rem rgba(var(--primary-color-rgb, 52, 152, 219), 0.25); 
+}
+/* Para usar --primary-color-rgb, defina-o em variables.css, ex: --primary-color-rgb: 52, 152, 219; */
+
+
+/* Estilo para placeholder */
+.form-control::placeholder {
+  color: var(--text-muted, #6c757d);
+  opacity: 1; /* Firefox */
+}
+
+/* Estilo para campos desabilitados */
+.form-control:disabled,
+.form-control[readonly] {
+  background-color: var(--light-gray-color, #e9ecef);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+/* Estilo para select (para remover aparência padrão e adicionar seta customizada) */
+select.form-control {
+  appearance: none; /* Remove a aparência padrão do sistema */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  /* Adiciona uma seta customizada como background */
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23333333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+  padding-right: 2.5rem; /* Espaço para a seta */
+}
+/* Para IE, a customização de select é limitada */
+select.form-control::-ms-expand {
+  display: none; /* Remove a seta padrão do IE */
+}
+
+
+/* Mensagens de erro/validação abaixo dos campos (opcional) */
+.form-text {
+  display: block;
+  margin-top: var(--spacing-xs, 0.25rem);
+  font-size: 0.875em;
+  color: var(--text-muted);
+}
+.invalid-feedback {
+  display: none; /* Mostrado via JS */
+  width: 100%;
+  margin-top: var(--spacing-xs, 0.25rem);
+  font-size: 0.875em;
+  color: var(--danger-color);
+}
+.is-invalid ~ .invalid-feedback,
+.is-invalid ~ .form-text { /* Se houver .form-text genérico */
+  display: block;
+}
+.form-control.is-invalid {
+  border-color: var(--danger-color);
+}
+.form-control.is-invalid:focus {
+  border-color: var(--danger-color);
+  box-shadow: 0 0 0 0.2rem rgba(var(--danger-color-rgb, 220, 53, 69), 0.25);
+  /* Defina --danger-color-rgb em variables.css, ex: --danger-color-rgb: 220, 53, 69; */
+}
+
+/* Checkbox e Radio (estilização básica, pode ser mais elaborada) */
+.form-check {
+  position: relative;
+  display: block;
+  padding-left: 1.5rem; /* Espaço para o input customizado ou padrão */
+  margin-bottom: var(--spacing-sm);
+}
+.form-check-input {
+  position: absolute;
+  margin-top: 0.3rem;
+  margin-left: -1.5rem;
+}
+.form-check-label {
+  margin-bottom: 0; /* Ajusta margem para labels de checkbox/radio */
+  font-weight: normal; /* Labels de check/radio geralmente não são bold */
+  color: var(--text-color);
+}

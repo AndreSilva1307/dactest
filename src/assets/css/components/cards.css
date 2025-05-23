@@ -1,0 +1,94 @@
+/* cards.css - Estilos para componentes de card */
+
+.card {
+  background-color: #ffffff; /* Fundo branco para os cards */
+  border: 1px solid var(--border-color, #e0e0e0); /* Borda sutil */
+  border-radius: var(--border-radius); /* Bordas arredondadas */
+  box-shadow: var(--box-shadow-light); /* Sombra suave para dar profundidade */
+  padding: var(--spacing-lg, 1.5rem); /* Espaçamento interno */
+  margin-bottom: var(--spacing-lg, 1.5rem); /* Espaçamento entre cards */
+  overflow: hidden; /* Garante que conteúdo interno não ultrapasse as bordas arredondadas */
+}
+
+.card-title, .card h2, .card h3 {
+  font-size: 1.4rem; /* Tamanho do título do card */
+  margin-top: 0; /* Remove margem superior padrão de títulos */
+  margin-bottom: var(--spacing-md, 1rem); /* Espaçamento abaixo do título */
+  color: var(--secondary-color); /* Cor do título */
+  font-weight: 600; /* Peso da fonte do título */
+}
+.card h3 {
+  font-size: 1.2rem;
+}
+
+
+/* Card de Informações do Usuário (exemplo de variação) */
+.user-info-card p,
+.patient-info-section .info-item, /* Para dashboard.html */
+.doctor-info-section .info-item {  /* Para dashboard.html */
+  margin-bottom: var(--spacing-sm, 0.8rem);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.user-info-card p strong,
+.patient-info-section .info-label, /* Para dashboard.html */
+.doctor-info-section .info-label {  /* Para dashboard.html */
+  font-weight: 600;
+  color: var(--secondary-color);
+  margin-right: var(--spacing-xs, 0.5rem);
+}
+
+/* Card de Agendamento */
+.appointment-card {
+  border-left: 4px solid var(--primary-color); /* Destaque visual */
+  margin-top: var(--spacing-sm);
+}
+.appointment-card.urgent {
+  border-left-color: var(--danger-color); /* Destaque para urgentes */
+}
+.appointment-card h3 {
+  font-size: 1.1rem;
+  color: var(--primary-color);
+}
+.appointment-card.urgent h3 {
+  color: var(--danger-color);
+}
+.appointment-card p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+.appointment-card p strong {
+  color: var(--text-color);
+}
+.appointment-card .notes {
+  font-size: 0.9rem;
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  border: 1px dashed #eee;
+}
+
+
+/* Estilos para listas dentro de cards, como lista de pacientes no dashboard do médico */
+.patients-list-container .patient-list-item {
+  /* Herda .card para o container, .patient-list-item é um item dentro */
+  background-color: #fdfdfd; /* Fundo ligeiramente diferente para itens da lista */
+  border: 1px solid #eee;
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: var(--border-radius);
+}
+
+.patient-list-item .patient-name {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.patient-list-item .patient-actions button {
+  margin-left: var(--spacing-sm);
+}

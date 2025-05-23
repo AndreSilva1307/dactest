@@ -1,0 +1,79 @@
+/* auth.css - Estilos específicos para as páginas de autenticação (login, registro) */
+
+body.auth-page { /* Adicione esta classe ao body das páginas de auth no HTML */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh; /* Ocupa toda a altura da viewport */
+  background-color: var(--background-color, #f0f2f5); /* Fundo um pouco diferente para auth */
+  padding: var(--spacing-md);
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 450px; /* Largura máxima do container de auth */
+  margin: var(--spacing-md) auto; /* Centraliza com margem automática */
+  padding: var(--spacing-xl, 2.5rem); /* Espaçamento interno generoso */
+  background-color: #ffffff; /* Fundo branco para o card de auth */
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow); /* Sombra para destacar */
+}
+
+.auth-container h1 {
+  text-align: center;
+  margin-bottom: var(--spacing-lg, 1.5rem);
+  color: var(--secondary-color);
+  font-size: 1.8rem; /* Tamanho do título principal */
+  font-weight: 600;
+}
+.auth-container h1 .app-name { /* Se você tiver um span para o nome do app */
+    color: var(--primary-color);
+}
+
+
+.auth-container .form-group {
+  margin-bottom: var(--spacing-lg, 1.2rem); /* Ajuste de espaçamento para auth */
+}
+
+.auth-container .btn-primary {
+  margin-top: var(--spacing-lg, 1.5rem); /* Espaço acima do botão principal */
+  padding: 0.8rem 1.5rem; /* Botão um pouco maior */
+  font-size: 1.05rem;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: var(--spacing-xl, 2rem);
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.auth-link a {
+  color: var(--primary-color);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+  color: var(--primary-color-dark);
+}
+
+/* Campos específicos para tipo de usuário no formulário de registro */
+.user-type-fields {
+  margin-top: var(--spacing-lg, 1.5rem);
+  padding-top: var(--spacing-lg, 1.5rem);
+  border-top: 1px solid var(--border-color, #eeeeee);
+}
+.user-type-fields .form-group:last-child {
+    margin-bottom: 0; /* Remove margem do último grupo dentro desta seção */
+}
+
+
+/* Mensagem de erro específica para auth, se necessário */
+.auth-container .error-message {
+  margin-top: 0; /* Remove margem superior se for o primeiro elemento */
+  margin-bottom: var(--spacing-lg, 1.5rem);
+  text-align: center;
+}
