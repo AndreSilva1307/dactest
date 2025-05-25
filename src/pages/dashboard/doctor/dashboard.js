@@ -1,181 +1,233 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  // Elementos do DOM para informações do médico
   const doctorNameEl = document.getElementById('doctorName');
   const doctorSpecialtyEl = document.getElementById('doctorSpecialty');
   const doctorInfoEl = document.getElementById('doctorInfo');
-  
-  // Elementos do DOM para a lista de pacientes
   const allPatientsListEl = document.getElementById('allPatientsList');
-  const refreshPatientsBtn = document.getElementById('refreshPatientsBtn');
-  
-  // Botão de logout
   const logoutBtn = document.getElementById('logoutBtn');
+  const refreshAllPatientsBtn = document.getElementById('refreshAllPatientsBtn');
 
-  let currentDoctorData = null; // Armazena dados completos do médico logado
+  // Modal elements for Appointment
+  const appointmentModal = document.getElementById('appointmentModal');
+  const closeAppointmentModalBtn = document.getElementById('closeAppointmentModalBtn');
+  const saveAppointmentBtn = document.getElementById('saveAppointmentBtn');
+  const cancelAppointmentBtn = document.getElementById('cancelAppointmentBtn');
+  const modalPatientNameApptEl = document.getElementById('modalPatientNameAppt');
+  const appointmentDateInput = document.getElementById('appointmentDate');
+  const appointmentReasonInput = document.getElementById('appointmentReason');
+
+  // Modal elements for File Upload
+  const fileUploadModal = document.getElementById('fileUploadModal');
+  const closeFileUploadModalBtn = document.getElementById('closeFileUploadModalBtn');
+  const saveFileUploadBtn = document.getElementById('saveFileUploadBtn');
+  const cancelFileUploadBtn = document.getElementById('cancelFileUploadBtn');
+  const modalPatientNameFileEl = document.getElementById('modalPatientNameFile');
+  const selectedFilePathInput = document.getElementById('selectedFilePath');
+  const browseFileBtn = document.getElementById('browseFileBtn');
+  const fileDescriptionInput = document.getElementById('fileDescription');
+
+  let currentDoctor = null;
+  let currentPatientForModal = null; // Store patient data for modal actions
 
   try {
-    currentDoctorData = await window.electronAPI.getUserData();
-
-    if (!currentDoctorData || currentDoctorData.userType !== 'doctor') {
+    const userData = await window.electronAPI.getUserData();
+    if (!userData || userData.userType !== 'doctor') {
       window.electronAPI.navigateTo('auth/login');
       return;
     }
+    currentDoctor = userData; // Store doctor's data
 
-    // Preencher informações do médico no topo
-    doctorNameEl.textContent = currentDoctorData.name || 'N/A';
-    doctorSpecialtyEl.textContent = currentDoctorData.specialty || 'Especialidade não definida';
+    doctorNameEl.textContent = currentDoctor.name;
+    doctorSpecialtyEl.textContent = currentDoctor.specialty || 'Especialidade não definida';
+
     doctorInfoEl.innerHTML = `
       <div class="info-item">
         <span class="info-label">CRM:</span>
-        <span class="info-value">${currentDoctorData.crm || 'Não registrado'}</span>
+        <span class="info-value">${currentDoctor.crm || 'Não registrado'}</span>
       </div>
       <div class="info-item">
         <span class="info-label">Email:</span>
-        <span class="info-value">${currentDoctorData.email}</span>
+        <span class="info-value">${currentDoctor.email}</span>
       </div>
       <div class="info-item">
         <span class="info-label">Membro Desde:</span>
-        <span class="info-value">${currentDoctorData.createdAt ? new Date(currentDoctorData.createdAt).toLocaleDateString('pt-BR') : 'N/A'}</span>
+        <span class="info-value">${new Date(currentDoctor.createdAt).toLocaleDateString('pt-BR')}</span>
       </div>
     `;
 
-    // Função para carregar todos os pacientes cadastrados
-    const loadAllRegisteredPatients = async () => {
-      allPatientsListEl.innerHTML = '<p class="loading-text">Carregando pacientes...</p>';
+    const loadAllPatients = async () => {
+      allPatientsListEl.innerHTML = '<p class="loading">Carregando pacientes...</p>';
       try {
-        const result = await window.electronAPI.getAllPatientsForDoctorView();
-
-        if (!result.success || !result.patients || result.patients.length === 0) {
-          allPatientsListEl.innerHTML = `<p class="no-data">${result.message || 'Nenhum paciente cadastrado no sistema.'}</p>`;
-          return;
-        }
-        
-        const patients = result.patients;
-        allPatientsListEl.innerHTML = patients.map(patient => `
-          <div class="patient-list-item">
-            <span class="patient-name">${patient.name} (Email: ${patient.email || 'N/A'})</span>
-            <div class="patient-actions">
-              <button class="btn small-btn schedule-appointment-btn" data-patient-id="${patient._id}" data-patient-name="${patient.name}">Cadastrar Consulta</button>
-              <button class="btn small-btn btn-secondary upload-files-btn" data-patient-id="${patient._id}" data-patient-name="${patient.name}">Upload Arquivos</button>
+        const result = await window.electronAPI.getAllPatients();
+        if (result.success && result.patients) {
+          if (result.patients.length === 0) {
+            allPatientsListEl.innerHTML = '<p class="no-data">Nenhum paciente cadastrado no sistema.</p>';
+            return;
+          }
+          allPatientsListEl.innerHTML = result.patients.map(patient => `
+            <div class="list-item patient-item">
+              <div class="patient-details list-item-info">
+                <p><strong>Nome:</strong> ${patient.name}</p>
+                <p><strong>Email:</strong> ${patient.email || 'Email não disponível'}</p>
+              </div>
+              <div class="patient-actions list-item-actions action-btn-group">
+                <button class="btn btn-primary small-btn schedule-appointment-btn" data-patient-id="${patient._id}" data-patient-name="${patient.name}">Marcar Consulta</button>
+                <button class="btn btn-info small-btn upload-file-btn" data-patient-id="${patient._id}" data-patient-name="${patient.name}">Upload Arquivo</button>
+              </div>
             </div>
-          </div>
-        `).join('');
-        
-        // Adicionar event listeners para os botões de cada paciente
-        document.querySelectorAll('.schedule-appointment-btn').forEach(button => {
-            button.addEventListener('click', handleScheduleAppointmentClick);
-        });
-        document.querySelectorAll('.upload-files-btn').forEach(button => {
-            button.addEventListener('click', handleUploadFilesClick);
-        });
-
+          `).join('');
+          addEventListenersToPatientButtons();
+        } else {
+          allPatientsListEl.innerHTML = `<p class="error">${result.message || 'Erro ao carregar pacientes.'}</p>`;
+        }
       } catch (error) {
-        allPatientsListEl.innerHTML = '<p class="error-text">Erro ao carregar a lista de pacientes.</p>';
-        console.error('Erro ao carregar pacientes:', error);
+        allPatientsListEl.innerHTML = '<p class="error">Erro crítico ao carregar pacientes.</p>';
+        console.error('Erro ao carregar todos os pacientes:', error);
       }
     };
 
-    // Event Listeners
     logoutBtn.addEventListener('click', () => window.electronAPI.logout());
-    refreshPatientsBtn.addEventListener('click', loadAllRegisteredPatients);
+    refreshAllPatientsBtn.addEventListener('click', loadAllPatients);
 
-    // Carregar dados iniciais
-    await loadAllRegisteredPatients();
+    await loadAllPatients();
 
   } catch (error) {
-    console.error('Erro crítico no dashboard do médico:', error);
-    // Tenta redirecionar para login em caso de erro grave na inicialização
-    const mainContainer = document.querySelector('.dashboard-container');
-    if (mainContainer) {
-        mainContainer.innerHTML = `<p class="error-text">Erro ao carregar o dashboard. Redirecionando para login...</p>`;
-    }
-    setTimeout(() => window.electronAPI.navigateTo('auth/login'), 3000);
+    console.error('Erro no dashboard do médico:', error);
+    // alert('Erro ao carregar dados do médico. Redirecionando para login.');
+    window.electronAPI.navigateTo('auth/login');
   }
-});
 
-// Funções auxiliares de formatação (se necessárias, podem ser movidas para um arquivo util.js)
-function formatDate(dateString) {
-  if (!dateString) return '--/--/----';
-  const date = new Date(dateString);
-  const utcDate = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-  return utcDate.toLocaleDateString('pt-BR');
-}
+  function addEventListenersToPatientButtons() {
+    document.querySelectorAll('.schedule-appointment-btn').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const patientId = e.target.dataset.patientId;
+        const patientName = e.target.dataset.patientName;
+        currentPatientForModal = { _id: patientId, name: patientName };
+        openAppointmentModal(patientName);
+      });
+    });
 
-function calculateAge(birthDate) {
-  if (!birthDate) return '--';
-  const birth = new Date(birthDate);
-  const today = new Date();
-  let age = today.getFullYear() - birth.getFullYear();
-  const m = today.getMonth() - birth.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-    age--;
+    document.querySelectorAll('.upload-file-btn').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const patientId = e.target.dataset.patientId;
+        const patientName = e.target.dataset.patientName;
+        currentPatientForModal = { _id: patientId, name: patientName };
+        openFileUploadModal(patientName);
+      });
+    });
   }
-  return age < 0 ? 0 : age; // Evita idade negativa se data de nascimento for futura
-}
 
-// Handler para o clique no botão "Cadastrar Consulta"
-async function handleScheduleAppointmentClick(event) {
-    const patientRecordId = event.target.dataset.patientId; // Este é o _id da coleção 'patients'
-    const patientName = event.target.dataset.patientName;
-    
-    const doctorData = await window.electronAPI.getUserData();
-    if (!doctorData || doctorData.userType !== 'doctor') {
-        alert('Erro: Não foi possível identificar o médico logado.');
+  // --- Appointment Modal Logic ---
+  function openAppointmentModal(patientName) {
+    modalPatientNameApptEl.textContent = patientName;
+    appointmentDateInput.value = '';
+    appointmentReasonInput.value = '';
+    appointmentModal.style.display = 'block';
+  }
+
+  closeAppointmentModalBtn.onclick = () => appointmentModal.style.display = 'none';
+  cancelAppointmentBtn.onclick = () => appointmentModal.style.display = 'none';
+
+  saveAppointmentBtn.addEventListener('click', async () => {
+    const appointmentDate = appointmentDateInput.value;
+    const reason = appointmentReasonInput.value.trim();
+
+    if (!appointmentDate || !reason) {
+      alert('Por favor, preencha a data e o motivo da consulta.');
+      return;
+    }
+    if (!currentPatientForModal || !currentDoctor) {
+        alert('Erro: Dados do paciente ou médico não encontrados.');
         return;
     }
-    const doctorUserId = doctorData._id; // _id do médico da coleção 'users'
-
-    const appointmentDateTimeStr = prompt(`Agendar consulta para ${patientName}.\nDigite a data e hora (AAAA-MM-DD HH:MM):`);
-    if (!appointmentDateTimeStr) {
-        alert('Agendamento cancelado.');
-        return;
-    }
-
-    // Validação simples do formato da data/hora
-    const dateTimeRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
-    if (!dateTimeRegex.test(appointmentDateTimeStr)) {
-        alert('Formato de data/hora inválido. Use AAAA-MM-DD HH:MM.');
-        return;
-    }
-    
-    // Tentar converter para objeto Date para verificar validade
-    const appointmentDateObj = new Date(appointmentDateTimeStr);
-    if (isNaN(appointmentDateObj.getTime())) {
-        alert('Data ou hora inválida. Verifique os valores inseridos.');
-        return;
-    }
-
-
-    const reason = prompt(`Digite o motivo da consulta para ${patientName}:`, "Consulta de rotina");
-    // Não cancelar se o motivo for deixado em branco, pode ser opcional ou ter um padrão.
-
-    const isUrgent = confirm(`A consulta para ${patientName} é urgente?`);
 
     try {
-        const result = await window.electronAPI.scheduleAppointment({
-            doctorUserId: doctorUserId,
-            patientRecordId: patientRecordId, 
-            appointmentDate: appointmentDateTimeStr, // Enviar como string, o backend converterá para Date
-            reason: reason,
-            urgent: isUrgent
-        });
+      const result = await window.electronAPI.scheduleAppointment({
+        patientId: currentPatientForModal._id,
+        doctorId: currentDoctor.doctorId, // Assuming doctorId is the _id from doctors collection
+        doctorName: currentDoctor.name,
+        patientName: currentPatientForModal.name,
+        appointmentDate: appointmentDate,
+        reason: reason
+      });
 
-        if (result.success) {
-            alert(result.message || 'Consulta agendada com sucesso!');
-            // Idealmente, atualizar apenas a parte da UI relevante ou adicionar o agendamento a uma lista de "próximos agendamentos do médico"
-            // Por simplicidade, pode-se recarregar a lista de pacientes ou uma seção de agendamentos.
-        } else {
-            alert(`Erro ao agendar: ${result.message || 'Não foi possível agendar a consulta.'}`);
-        }
+      if (result.success) {
+        alert('Consulta marcada com sucesso!');
+        appointmentModal.style.display = 'none';
+        // Optionally refresh parts of the UI if needed
+      } else {
+        alert(`Erro ao marcar consulta: ${result.message}`);
+      }
     } catch (error) {
-        console.error('Erro ao tentar agendar consulta:', error);
-        alert('Falha ao conectar com o servidor para agendar a consulta.');
+      console.error('Erro ao marcar consulta:', error);
+      alert('Erro de comunicação ao marcar consulta.');
     }
-}
+  });
 
-// Handler para o clique no botão "Upload Arquivos" (Placeholder)
-function handleUploadFilesClick(event) {
-    const patientId = event.target.dataset.patientId;
-    const patientName = event.target.dataset.patientName;
-    alert(`FUNCIONALIDADE PLACEHOLDER:\n\nUpload de Arquivos para ${patientName} (ID: ${patientId}).\n\nEsta funcionalidade permitiria ao médico enviar laudos, receitas e outros documentos para o paciente.\nRequer implementação de backend para armazenamento seguro e frontend para seleção e envio de arquivos, respeitando a LGPD.`);
-}
+  // --- File Upload Modal Logic ---
+  function openFileUploadModal(patientName) {
+    modalPatientNameFileEl.textContent = patientName;
+    selectedFilePathInput.value = '';
+    fileDescriptionInput.value = '';
+    fileUploadModal.style.display = 'block';
+  }
+
+  closeFileUploadModalBtn.onclick = () => fileUploadModal.style.display = 'none';
+  cancelFileUploadBtn.onclick = () => fileUploadModal.style.display = 'none';
+
+  browseFileBtn.addEventListener('click', async () => {
+    const result = await window.electronAPI.openFileDialog();
+    if (result.success && !result.canceled) {
+      selectedFilePathInput.value = result.filePath;
+    }
+  });
+
+  saveFileUploadBtn.addEventListener('click', async () => {
+    const filePath = selectedFilePathInput.value;
+    const description = fileDescriptionInput.value.trim();
+
+    if (!filePath) {
+      alert('Por favor, selecione um arquivo.');
+      return;
+    }
+     if (!currentPatientForModal || !currentDoctor) {
+        alert('Erro: Dados do paciente ou médico não encontrados.');
+        return;
+    }
+
+
+    const fileName = filePath.split(/[\\/]/).pop(); // Extract filename from path
+
+    try {
+      const result = await window.electronAPI.uploadPatientFile({
+        patientId: currentPatientForModal._id,
+        doctorId: currentDoctor.doctorId,
+        doctorName: currentDoctor.name,
+        patientName: currentPatientForModal.name,
+        filePath: filePath,
+        fileName: fileName,
+        description: description
+      });
+
+      if (result.success) {
+        alert('Arquivo enviado com sucesso!');
+        fileUploadModal.style.display = 'none';
+        // Optionally refresh UI
+      } else {
+        alert(`Erro ao enviar arquivo: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('Erro ao enviar arquivo:', error);
+      alert('Erro de comunicação ao enviar arquivo.');
+    }
+  });
+
+  // Close modals if clicked outside content
+  window.onclick = function(event) {
+    if (event.target == appointmentModal) {
+      appointmentModal.style.display = "none";
+    }
+    if (event.target == fileUploadModal) {
+      fileUploadModal.style.display = "none";
+    }
+  }
+});

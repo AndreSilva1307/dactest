@@ -1,150 +1,172 @@
-/* dashboard.css - Estilos específicos para as páginas de dashboard */
-
-/* Cabeçalho do Dashboard */
 .dashboard-header {
-  /* A cor de fundo aqui é definida por --secondary-color. 
-     Se estiver aparecendo claro, verifique a definição de --secondary-color em variables.css
-     ou se há outra regra CSS sobrescrevendo o background.
-     Assumindo que o fundo está claro (conforme a descrição do problema),
-     vamos garantir que o texto seja escuro. */
-  background-color: var(--secondary-color); 
+    background-color: var(--dark-color);
+    color: var(--text-light);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
   
-  /* ALTERAÇÃO PRINCIPAL: Mudar a cor do texto padrão do cabeçalho para uma cor escura */
-  color: var(--text-color); /* Usa a variável de cor de texto principal (escura) */
+  .dashboard-header .header-content h1 {
+    font-size: 1.6rem; /* Slightly reduced */
+    font-weight: 500;
+    margin: 0;
+  }
+  .dashboard-header .header-content p {
+    font-size: 0.9rem;
+    margin: 0.2rem 0 0 0;
+    color: var(--light-color);
+    opacity: 0.8;
+  }
   
-  padding: var(--spacing-md, 1rem) var(--spacing-lg, 2rem); /* Espaçamento interno */
-  display: flex;
-  justify-content: space-between; /* Alinha itens nas extremidades */
-  align-items: center; /* Alinha itens verticalmente ao centro */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* Sombra sutil abaixo do cabeçalho */
-  position: sticky; /* Fixa o header no topo durante o scroll */
-  top: 0;
-  z-index: 1000; /* Garante que fique acima de outros conteúdos */
-}
+  .dashboard-container { /* Renamed from .dashboard-content for clarity */
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .user-info-card { /* This class was in cards.css, but used here for context */
+    background-color: var(--light-color); /* Example styling for specific user info card */
+    /* padding: 2rem; Redundant if .card already has padding */
+  }
 
-.dashboard-header .header-content {
-  /* Contêiner para título e subtítulo, se houver */
-}
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
 
-.dashboard-header h1 {
-  font-size: 1.6rem;
-  font-weight: 500;
-  margin: 0; /* Remove margem padrão do h1 */
-  /* A cor do h1 agora será herdada de .dashboard-header, que é var(--text-color) (escura) */
-}
+  .section-header h2 {
+    font-size: 1.4rem;
+    color: var(--dark-color);
+    font-weight: 600;
+  }
+  
+  /* Patient item in Doctor's dashboard */
+  .patient-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    margin-bottom: 0.8rem;
+    background-color: #fff;
+  }
 
-/* Estilizando o nome do usuário/médico/paciente dentro do h1 para ter uma cor de destaque (opcional) */
-.dashboard-header h1 #userName, 
-.dashboard-header h1 #doctorName,
-.dashboard-header h1 #patientName {
-  font-weight: 600; /* Nome do usuário em destaque */
-  color: var(--primary-color); /* Pode usar a cor primária para o nome, para diferenciá-lo do "Bem-vindo" */
-}
+  .patient-details p {
+    margin: 0 0 0.3rem 0;
+    font-size: 0.9rem;
+  }
+  .patient-details p strong {
+    color: var(--dark-color);
+  }
+  .patient-actions .btn {
+    margin-left: 0.5rem;
+  }
 
+  /* Appointment card in Patient's dashboard */
+  .appointment-card, .file-card {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-bottom: 0.8rem;
+  }
 
-.dashboard-header p { /* Para especialidade do médico, etc. */
-  font-size: 0.9rem;
-  margin: 0.25rem 0 0 0;
-  opacity: 0.9;
-  /* A cor do parágrafo também será herdada de .dashboard-header (escura) */
-}
+  .appointment-card h3, .file-card h3 {
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+  }
+  .appointment-card p, .file-card p {
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+    color: var(--text-color);
+  }
+  .appointment-card p strong, .file-card p strong {
+    color: var(--dark-color);
+  }
+  .appointment-card .notes {
+    font-style: italic;
+    color: var(--gray-color);
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+  }
+  .appointment-card.urgent {
+    border-left: 4px solid var(--danger-color);
+  }
 
-.dashboard-header .logout-btn {
-  background-color: var(--danger-color);
-  color: var(--text-light); /* Botão de logout mantém texto claro sobre fundo vermelho */
-  border-color: var(--danger-color);
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-}
-.dashboard-header .logout-btn:hover {
-  background-color: #c0392b; /* Vermelho mais escuro */
-  border-color: #c0392b;
-}
+  .file-actions .btn {
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+  }
 
-/* Contêiner Principal do Dashboard */
-.dashboard-container {
-  padding: var(--spacing-lg, 1.5rem);
-  max-width: 1200px; /* Largura máxima para o conteúdo */
-  margin: 0 auto; /* Centraliza o conteúdo */
-}
+  /* Dashboard sections */
+  .dashboard-section {
+    margin-bottom: 2rem;
+  }
+  .dashboard-section .card { /* Ensure cards within sections have their usual styling */
+    background: #fff; /* Re-assert if needed */
+  }
 
-/* Seções dentro do Dashboard */
-.dashboard-container section.card { /* Aplica estilo de card às seções */
-  margin-bottom: var(--spacing-xl, 2rem); /* Espaçamento maior entre seções principais */
-}
+  /* Modal basic styles (can be expanded) */
+  .modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+  }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-md, 1rem);
-  padding-bottom: var(--spacing-sm, 0.5rem);
-  border-bottom: 1px solid var(--border-color, #eee);
-}
+  .modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 25px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
 
-.section-header h2 {
-  font-size: 1.3rem;
-  color: var(--primary-color);
-  margin: 0;
-}
-.section-header .btn { /* Botões no cabeçalho da seção, como "Atualizar" */
-  padding: 0.4rem 0.8rem;
-  font-size: 0.85rem;
-}
+  .modal-header {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+  }
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--dark-color);
+  }
 
-/* Grid de Informações (usado para exibir dados do usuário/médico/paciente) */
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Colunas responsivas */
-  gap: var(--spacing-md, 1rem); /* Espaçamento entre os itens do grid */
-  margin-top: var(--spacing-sm, 0.5rem);
-}
+  .modal-footer {
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    margin-top: 15px;
+    text-align: right;
+  }
+  .modal-footer .btn {
+    margin-left: 10px;
+  }
 
-.info-item {
-  background-color: #f9fafb; /* Fundo sutil para cada item de informação */
-  padding: var(--spacing-sm, 0.8rem) var(--spacing-md, 1rem);
-  border-radius: 4px;
-  border: 1px solid #edf2f7;
-}
+  .close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
 
-.info-label {
-  font-weight: 600;
-  color: var(--secondary-color);
-  display: block;
-  margin-bottom: var(--spacing-xs, 0.3rem);
-  font-size: 0.9rem;
-}
-
-.info-value {
-  color: var(--text-color);
-  font-size: 1rem;
-  word-break: break-word; /* Quebra palavras longas para evitar overflow */
-}
-
-/* Listas (consultas, pacientes) */
-.appointments-list, 
-.patients-list-container, /* Usado no dashboard do médico */
-.medical-files-list {     /* Usado no dashboard do paciente */
-  margin-top: var(--spacing-sm, 0.5rem);
-}
-
-/* Ícones (exemplo simples usando ::before, pode ser substituído por SVGs ou bibliotecas de ícones) */
-.icon-info::before { content: "ℹ️"; margin-right: 8px; }
-.icon-calendar::before { content: "📅"; margin-right: 8px; }
-.icon-patients::before { content: "👥"; margin-right: 8px; }
-.icon-user::before { content: "👤"; margin-right: 8px; }
-.icon-files::before { content: "📄"; margin-right: 8px; } /* Para laudos e receitas */
-
-/* Estilos específicos para a lista de pacientes no dashboard do médico */
-.patients-list-container .patient-list-item {
-  /* .patient-list-item já tem estilos em cards.css, aqui podemos adicionar mais se necessário */
-}
-.patient-list-item .patient-name {
-  flex-grow: 1; /* Permite que o nome ocupe o espaço disponível */
-  margin-right: var(--spacing-md);
-}
-.patient-list-item .patient-actions {
-  flex-shrink: 0; /* Evita que os botões encolham */
-  display: flex;
-  gap: var(--spacing-sm);
-}
+  .close-btn:hover,
+  .close-btn:focus {
+    color: black;
+    text-decoration: none;
+  }

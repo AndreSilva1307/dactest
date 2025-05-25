@@ -5,135 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard do Paciente - ByteBlass</title>
   <link rel="stylesheet" href="../../../assets/css/main.css">
-  <style>
-    /* Estilos adicionais para o dashboard do paciente */
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    .info-item {
-      background-color: #f9f9f9;
-      padding: 0.8rem;
-      border-radius: 4px;
-      border: 1px solid #eee;
-    }
-    .info-label {
-      font-weight: bold;
-      color: var(--secondary-color);
-      display: block;
-      margin-bottom: 0.3rem;
-    }
-    .info-value {
-      color: var(--text-color);
-    }
-    .dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 2rem;
-        background-color: var(--dark-color);
-        color: var(--text-light);
-    }
-     .dashboard-header h1 {
-        margin: 0;
-    }
-    .dashboard-container {
-        padding: 1.5rem;
-        max-width: 1000px;
-        margin: 0 auto;
-    }
-    .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-    .section-header h2 {
-        margin: 0;
-        color: var(--primary-color);
-    }
-    .appointments-list, .medical-files-list {
-      margin-top: 1rem;
-    }
-    .appointment-card, .file-card {
-      background-color: #fff;
-      border: 1px solid #ddd;
-      border-radius: var(--border-radius);
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .appointment-card.urgent {
-      border-left: 5px solid var(--danger-color);
-    }
-    .appointment-card h3, .file-card h3 {
-      margin-top: 0;
-      color: var(--dark-color);
-    }
-    .appointment-card p, .file-card p {
-      margin-bottom: 0.5rem;
-      line-height: 1.6;
-    }
-    .notes {
-      font-style: italic;
-      color: #555;
-      background-color: #f9f9f9;
-      padding: 0.5rem;
-      border-radius: 4px;
-      margin-top: 0.5rem;
-    }
-    .icon-info::before { content: "ℹ️"; margin-right: 8px; }
-    .icon-calendar::before { content: "📅"; margin-right: 8px; }
-    .icon-files::before { content: "📄"; margin-right: 8px; }
-    .no-data {
-        color: #777;
-        text-align: center;
-        padding: 1rem;
-        background-color: #f9f9f9;
-        border-radius: var(--border-radius);
-    }
-  </style>
 </head>
 <body>
   <header class="dashboard-header">
-    <h1>Bem-vindo(a), <span id="patientName">Carregando...</span>!</h1>
+    <div class="header-content">
+        <h1>Bem-vindo(a), <span id="userName"></span></h1>
+    </div>
     <button id="logoutBtn" class="btn logout-btn">Sair</button>
   </header>
   
   <main class="dashboard-container">
-    <section class="patient-info-section card">
-      <h2><i class="icon-info"></i>Suas Informações</h2>
-      <div id="patientInfo" class="info-grid">
-        <p class="loading-text">Carregando informações...</p>
-      </div>
-    </section>
-
-    <section class="medical-files-section card">
-        <div class="section-header">
-            <h2><i class="icon-files"></i>Meus Laudos e Receitas</h2>
-            </div>
-        <div id="medicalFilesList" class="medical-files-list">
-            <p class="no-data">Nenhum laudo ou receita disponível no momento. <br><small>(Esta é uma área para visualização de arquivos enviados pelo seu médico. Funcionalidade de upload e listagem de arquivos ainda não implementada.)</small></p>
-            <!-- Exemplo de como um arquivo poderia ser mostrado (apenas visual):
-            <div class="file-card">
-                <h3>Exame de Sangue - 20/05/2025</h3>
-                <p><strong>Enviado por:</strong> Dr. Exemplo</p>
-                <p><strong>Data do Envio:</strong> 21/05/2025</p>
-                <button class="btn btn-primary small-btn">Visualizar/Baixar</button>
-            </div>
-            -->
+    <section class="dashboard-section">
+      <div class="card user-info-card">
+         <div class="section-header">
+            <h2>Suas Informações</h2>
         </div>
+        <div id="patientInfo" class="info-grid"></div>
+      </div>
     </section>
 
-    <section class="appointments-section card">
-      <div class="section-header">
-        <h2><i class="icon-calendar"></i>Próximas Consultas</h2>
-        <button id="refreshAppointmentsBtn" class="btn small-btn">Atualizar Consultas</button>
+    <section class="dashboard-section">
+      <div class="card">
+        <div class="section-header">
+          <h2>Próximas Consultas</h2>
+          <button id="refreshAppointmentsBtn" class="btn btn-secondary small-btn">Atualizar Consultas</button>
+        </div>
+        <div id="appointmentsList" class="list-container">
+          </div>
       </div>
-      <div id="appointmentsList" class="appointments-list">
-        <p class="loading-text">Carregando consultas...</p>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="card">
+        <div class="section-header">
+          <h2>Meus Arquivos</h2>
+          <button id="refreshFilesBtn" class="btn btn-secondary small-btn">Atualizar Arquivos</button>
+        </div>
+        <div id="patientFilesList" class="list-container">
+            </div>
       </div>
     </section>
   </main>

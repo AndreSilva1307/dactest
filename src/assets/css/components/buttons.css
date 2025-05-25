@@ -1,115 +1,68 @@
-/* buttons.css - Estilos para botões */
-
 .btn {
-  display: inline-block; /* Permite padding e margin */
-  padding: 0.6rem 1.2rem; /* Espaçamento interno (vertical, horizontal) */
-  border: 1px solid transparent; /* Borda padrão transparente */
-  border-radius: var(--border-radius); /* Bordas arredondadas */
-  cursor: pointer;
-  font-size: 0.95rem; /* Tamanho da fonte */
-  font-weight: 500; /* Peso da fonte */
-  text-align: center;
-  text-decoration: none; /* Remove sublinhado de links estilizados como botões */
-  transition: var(--transition-default); /* Transição suave para hover/focus */
-  line-height: 1.5; /* Altura da linha para alinhamento vertical do texto */
-  white-space: nowrap; /* Evita que o texto do botão quebre linha */
-}
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    transition: var(--transition);
+  }
+  
+  .btn-primary {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--secondary-color);
+  }
+  
+  .btn-block {
+    display: block;
+    width: 100%;
+  }
+  
+  .logout-btn {
+    background-color: var(--danger-color);
+    color: var(--text-light);
+  }
+  
+  .logout-btn:hover {
+    background-color: #c0392b; /* Darken danger color */
+  }
 
-/* Botão Primário */
-.btn-primary {
-  background-color: var(--primary-color);
-  color: var(--text-light);
-  border-color: var(--primary-color);
-}
-.btn-primary:hover,
-.btn-primary:focus {
-  background-color: var(--primary-color-dark);
-  border-color: var(--primary-color-dark);
-  color: var(--text-light);
-  outline: none; /* Remove outline padrão do navegador no foco */
-}
-.btn-primary:active {
-  background-color: var(--primary-color-dark); /* Pode ser ainda mais escuro */
-  transform: translateY(1px); /* Efeito de pressionar */
-}
+  .btn-secondary {
+    background-color: var(--gray-color);
+    color: var(--text-light);
+  }
 
-/* Botão Secundário (Outline) */
-.btn-secondary {
-  background-color: transparent;
-  color: var(--primary-color);
-  border-color: var(--primary-color);
-}
-.btn-secondary:hover,
-.btn-secondary:focus {
-  background-color: var(--primary-color);
-  color: var(--text-light);
-  border-color: var(--primary-color);
-  outline: none;
-}
-.btn-secondary:active {
-  background-color: var(--primary-color-dark);
-  border-color: var(--primary-color-dark);
-  color: var(--text-light);
-  transform: translateY(1px);
-}
+  .btn-secondary:hover {
+    background-color: #7f8c8d; /* Darken gray color */
+  }
 
-/* Botão de Perigo (Logout, Excluir) */
-.btn-danger, .logout-btn {
-  background-color: var(--danger-color);
-  color: var(--text-light);
-  border-color: var(--danger-color);
-}
-.btn-danger:hover, .logout-btn:hover,
-.btn-danger:focus, .logout-btn:focus {
-  background-color: #c0392b; /* Vermelho mais escuro */
-  border-color: #c0392b;
-  color: var(--text-light);
-  outline: none;
-}
-.btn-danger:active, .logout-btn:active {
-  background-color: #a93226; /* Ainda mais escuro */
-  transform: translateY(1px);
-}
+  .btn-info {
+    background-color: var(--info-color);
+    color: var(--text-light);
+  }
+  .btn-info:hover {
+    background-color: #16a085; /* Darken info color */
+  }
 
-/* Botão de Bloco (ocupa toda a largura) */
-.btn-block {
-  display: block;
-  width: 100%;
-}
+  .btn-success {
+    background-color: var(--success-color);
+    color: var(--text-light);
+  }
+  .btn-success:hover {
+    background-color: #27ae60; /* Darken success color */
+  }
+  
+  .small-btn {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
 
-/* Botões Pequenos */
-.small-btn {
-  padding: 0.4rem 0.8rem;
-  font-size: 0.85rem;
-}
-
-/* Botões Desabilitados */
-.btn:disabled,
-.btn.disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-.btn:disabled:hover,
-.btn.disabled:hover {
-  /* Mantém a aparência desabilitada no hover */
-  background-color: initial; /* Ou a cor base do botão desabilitado */
-  border-color: initial;
-  color: initial;
-}
-
-/* Botão de Link (aparência de link, comportamento de botão) */
-.btn-link {
-  background-color: transparent;
-  border-color: transparent;
-  color: var(--primary-color);
-  text-decoration: underline;
-  padding: 0; /* Remove padding para se assemelhar a um link */
-}
-.btn-link:hover,
-.btn-link:focus {
-  color: var(--primary-color-dark);
-  text-decoration: none; /* Ou manter sublinhado, dependendo da preferência */
-  background-color: transparent;
-  border-color: transparent;
-}
+  .action-btn-group button {
+    margin-left: 5px;
+  }

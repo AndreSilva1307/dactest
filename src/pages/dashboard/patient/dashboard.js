@@ -1,85 +1,128 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  // Elementos do DOM para informações do paciente
-  const patientNameEl = document.getElementById('patientName');
+  // Elementos do DOM
+  const userNameEl = document.getElementById('userName');
   const patientInfoEl = document.getElementById('patientInfo');
-  
-  // Elementos do DOM para consultas
   const appointmentsListEl = document.getElementById('appointmentsList');
-  const refreshAppointmentsBtn = document.getElementById('refreshAppointmentsBtn');
-
-  // Elemento do DOM para laudos e receitas (placeholder)
-  const medicalFilesListEl = document.getElementById('medicalFilesList');
-  
-  // Botão de logout
+  const patientFilesListEl = document.getElementById('patientFilesList');
   const logoutBtn = document.getElementById('logoutBtn');
+  const refreshAppointmentsBtn = document.getElementById('refreshAppointmentsBtn');
+  const refreshFilesBtn = document.getElementById('refreshFilesBtn');
 
-  let currentPatientData = null; // Armazena dados completos do paciente logado
+  let currentPatient = null;
 
   try {
-    currentPatientData = await window.electronAPI.getUserData();
+    // Verificação de autenticação
+    const userData = await window.electronAPI.getUserData();
     
-    if (!currentPatientData || currentPatientData.userType !== 'patient') {
+    if (!userData || userData.userType !== 'patient') {
       window.electronAPI.navigateTo('auth/login');
       return;
     }
+    currentPatient = userData;
 
-    // Preencher informações do paciente no topo
-    patientNameEl.textContent = currentPatientData.name || 'N/A';
+    // Preencher informações do paciente
+    userNameEl.textContent = currentPatient.name;
+    
     patientInfoEl.innerHTML = `
       <div class="info-item">
         <span class="info-label">Email:</span>
-        <span class="info-value">${currentPatientData.email}</span>
+        <span class="info-value">${currentPatient.email}</span>
       </div>
       <div class="info-item">
         <span class="info-label">Data de Nascimento:</span>
-        <span class="info-value">${currentPatientData.birthDate ? formatDate(currentPatientData.birthDate) : 'N/A'}</span>
+        <span class="info-value">${formatDate(currentPatient.birthDate)}</span>
       </div>
       <div class="info-item">
         <span class="info-label">Idade:</span>
-        <span class="info-value">${currentPatientData.birthDate ? calculateAge(currentPatientData.birthDate) + ' anos' : 'N/A'}</span>
+        <span class="info-value">${calculateAge(currentPatient.birthDate)} anos</span>
       </div>
       <div class="info-item">
         <span class="info-label">Plano de Saúde:</span>
-        <span class="info-value">${currentPatientData.healthPlan || 'Particular'}</span>
+        <span class="info-value">${currentPatient.healthPlan || 'Particular'}</span>
       </div>
     `;
 
-    // Função para carregar consultas agendadas
+    // Carregar consultas
     const loadAppointments = async () => {
-      appointmentsListEl.innerHTML = '<p class="loading-text">Carregando suas consultas...</p>';
+      appointmentsListEl.innerHTML = '<p class="loading">Carregando consultas...</p>';
       try {
-        // currentPatientData._id é o users._id do paciente
-        const result = await window.electronAPI.getScheduledAppointments(currentPatientData._id); 
+        // currentPatient.patientId should be the _id from the patients collection
+        // currentPatient._id from users collection, currentPatient.patientId from patients collection
+        const patientSpecificId = currentPatient.patientId || currentPatient._id; // Fallback if patientId isn't set as expected
+        const result = await window.electronAPI.getPatientAppointments(patientSpecificId);
         
-        if (!result.success || !result.appointments || result.appointments.length === 0) {
-          appointmentsListEl.innerHTML = `<p class="no-data">${result.message || 'Você não possui nenhuma consulta agendada no momento.'}</p>`;
-          return;
+        if (result.success && result.appointments) {
+          if (result.appointments.length === 0) {
+            appointmentsListEl.innerHTML = '<p class="no-data">Nenhuma consulta agendada.</p>';
+            return;
+          }
+          appointmentsListEl.innerHTML = result.appointments.map(appt => `
+            <div class="list-item appointment-card ${appt.status === 'urgent' ? 'urgent' : ''}"> 
+              <div class="list-item-info">
+                <h3>Consulta com Dr(a). ${appt.doctorName || 'Nome do Médico Indisponível'}</h3>
+                <p><strong>Data e Hora:</strong> ${formatDateTime(appt.date)}</p>
+                <p><strong>Motivo:</strong> ${appt.reason || 'Não especificado'}</p>
+                <p><strong>Status:</strong> ${appt.status || 'Não especificado'}</p>
+                ${appt.notes ? `<p class="notes"><strong>Observações:</strong> ${appt.notes}</p>` : ''}
+              </div>
+            </div>
+          `).join('');
+        } else {
+          appointmentsListEl.innerHTML = `<p class="error">${result.message || 'Erro ao carregar consultas.'}</p>`;
         }
-
-        const appointments = result.appointments;
-        // Ordenar por data mais recente primeiro, se o backend não fizer isso
-        // appointments.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
-
-        appointmentsListEl.innerHTML = appointments.map(appt => `
-          <div class="appointment-card ${appt.urgent ? 'urgent' : ''}">
-            <h3>Consulta com Dr(a). ${appt.doctorName || 'Não especificado'}</h3>
-            <p><strong>Data e Hora:</strong> ${appt.appointmentDate ? formatDateTime(appt.appointmentDate) : 'N/A'}</p> 
-            <p><strong>Motivo:</strong> ${appt.reason || 'Não especificado'}</p>
-            <p><strong>Status:</strong> ${appt.status || 'Não informado'}</p>
-            ${appt.notes ? `<p class="notes"><strong>Observações do Médico:</strong> ${appt.notes}</p>` : ''}
-          </div>
-        `).join('');
       } catch (error) {
-        appointmentsListEl.innerHTML = '<p class="error-text">Erro ao carregar suas consultas.</p>';
+        appointmentsListEl.innerHTML = '<p class="error">Erro crítico ao carregar consultas.</p>';
         console.error('Erro ao carregar consultas:', error);
       }
     };
 
-    // Lógica para a seção "Meus Laudos e Receitas" (Placeholder)
-    // Atualmente, apenas exibe uma mensagem estática.
-    // No futuro, chamaria uma API como window.electronAPI.getPatientFiles(currentPatientData._id)
-    // e renderizaria os arquivos recebidos.
-    // medicalFilesListEl.innerHTML = '<p class="no-data">Nenhum laudo ou receita disponível. (Funcionalidade em desenvolvimento)</p>';
+    // Carregar arquivos do paciente
+    const loadPatientFiles = async () => {
+      patientFilesListEl.innerHTML = '<p class="loading">Carregando arquivos...</p>';
+      try {
+        const patientSpecificId = currentPatient.patientId || currentPatient._id;
+        const result = await window.electronAPI.getPatientFiles(patientSpecificId);
+
+        if (result.success && result.files) {
+          if (result.files.length === 0) {
+            patientFilesListEl.innerHTML = '<p class="no-data">Nenhum arquivo encontrado.</p>';
+            return;
+          }
+          patientFilesListEl.innerHTML = result.files.map(file => `
+            <div class="list-item file-card">
+              <div class="list-item-info">
+                <h3>${file.fileName}</h3>
+                <p><strong>Enviado por:</strong> Dr(a). ${file.doctorName || 'Não especificado'}</p>
+                <p><strong>Data do Upload:</strong> ${formatDate(file.uploadDate)}</p>
+                ${file.description ? `<p><strong>Descrição:</strong> ${file.description}</p>` : ''}
+              </div>
+              <div class="list-item-actions file-actions">
+                <button class="btn btn-success small-btn view-file-btn" data-filepath="${file.originalPath}">Ver Arquivo</button>
+              </div>
+            </div>
+          `).join('');
+          addEventListenersToFileButtons();
+        } else {
+          patientFilesListEl.innerHTML = `<p class="error">${result.message || 'Erro ao carregar arquivos.'}</p>`;
+        }
+      } catch (error) {
+        patientFilesListEl.innerHTML = '<p class="error">Erro crítico ao carregar arquivos.</p>';
+        console.error('Erro ao carregar arquivos do paciente:', error);
+      }
+    };
+    
+    function addEventListenersToFileButtons() {
+        document.querySelectorAll('.view-file-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const filePath = e.target.dataset.filepath;
+                if (filePath) {
+                    window.electronAPI.openFileExternally(filePath);
+                } else {
+                    alert('Caminho do arquivo não encontrado.');
+                }
+            });
+        });
+    }
 
 
     // Event Listeners
@@ -88,55 +131,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     refreshAppointmentsBtn.addEventListener('click', loadAppointments);
+    refreshFilesBtn.addEventListener('click', loadPatientFiles);
+
+    // Listener for file open errors
+    window.electronAPI.onFileOpenError((message) => {
+        alert(`Erro ao abrir arquivo: ${message}`);
+    });
 
     // Carregar dados iniciais
     await loadAppointments();
+    await loadPatientFiles();
 
   } catch (error) {
-    console.error('Erro crítico no dashboard do paciente:', error);
-    const mainContainer = document.querySelector('.dashboard-container');
-    if (mainContainer) {
-        mainContainer.innerHTML = `<p class="error-text">Erro ao carregar o dashboard. Redirecionando para login...</p>`;
-    }
-    setTimeout(() => window.electronAPI.navigateTo('auth/login'), 3000);
+    console.error('Erro no dashboard do paciente:', error);
+    // alert('Erro ao carregar dados do paciente. Redirecionando para login.');
+    window.electronAPI.navigateTo('auth/login');
   }
 });
 
-// Funções auxiliares de formatação
+// Funções auxiliares
 function formatDate(dateString) {
   if (!dateString) return '--/--/----';
   const date = new Date(dateString);
-  // Ajuste para UTC para exibir corretamente a data independente do fuso local de entrada
-  const utcDate = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-  return utcDate.toLocaleDateString('pt-BR');
+  // Adiciona verificação se a data é válida
+  if (isNaN(date.getTime())) return 'Data inválida';
+  return date.toLocaleDateString('pt-BR');
 }
 
 function formatDateTime(dateString) {
   if (!dateString) return '--/--/---- --:--';
   const date = new Date(dateString);
-  return date.toLocaleString('pt-BR', { 
-    year: 'numeric', month: '2-digit', day: '2-digit', 
-    hour: '2-digit', minute: '2-digit', hour12: false 
-  });
+  if (isNaN(date.getTime())) return 'Data/Hora inválida';
+  return date.toLocaleString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 }
 
 function calculateAge(birthDateString) {
   if (!birthDateString) return '--';
   const birthDate = new Date(birthDateString);
-  // Garante que a data de nascimento seja interpretada como UTC para evitar problemas de fuso
-  const birthYear = birthDate.getUTCFullYear();
-  const birthMonth = birthDate.getUTCMonth();
-  const birthDay = birthDate.getUTCDate();
+  if (isNaN(birthDate.getTime())) return '--'; // Invalid date
 
   const today = new Date();
-  const todayYear = today.getFullYear();
-  const todayMonth = today.getMonth();
-  const todayDay = today.getDate();
-
-  let age = todayYear - birthYear;
-  // Ajusta a idade se o aniversário deste ano ainda não ocorreu
-  if (todayMonth < birthMonth || (todayMonth === birthMonth && todayDay < birthDay)) {
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDifference = today.getMonth() - birthDate.getMonth();
+  
+  if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
     age--;
   }
-  return age < 0 ? 0 : age; // Evita idade negativa
+  return age >= 0 ? age : '--'; // Ensure age is not negative
 }

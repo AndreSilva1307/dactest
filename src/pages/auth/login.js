@@ -13,8 +13,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('loginForm');
   const registerLink = document.getElementById('registerLink');
   const errorMessage = document.createElement('div');
-  errorMessage.className = 'error-message';
+  errorMessage.className = 'error-message'; // Make sure .error-message is styled in CSS
+  // Style error message dynamically or via CSS
+  errorMessage.style.color = 'var(--danger-color)';
+  errorMessage.style.backgroundColor = '#fdd';
+  errorMessage.style.border = '1px solid var(--danger-color)';
+  errorMessage.style.padding = '10px';
+  errorMessage.style.marginBottom = '15px';
+  errorMessage.style.borderRadius = 'var(--border-radius)';
   loginForm.insertBefore(errorMessage, loginForm.firstChild);
+
 
   // Configuração inicial
   errorMessage.style.display = 'none';

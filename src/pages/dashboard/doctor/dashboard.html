@@ -5,109 +5,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard do Médico - ByteBlass</title>
   <link rel="stylesheet" href="../../../assets/css/main.css">
-  <style>
-    /* Estilos adicionais para a lista de pacientes e botões */
-    .patients-list-container {
-      margin-top: 2rem;
-    }
-    .patient-list-item {
-      background-color: #fff;
-      border: 1px solid #ddd;
-      border-radius: var(--border-radius);
-      padding: 1rem;
-      margin-bottom: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .patient-name {
-      font-weight: 600;
-      color: var(--dark-color);
-      font-size: 1.1rem;
-    }
-    .patient-actions button {
-      margin-left: 0.5rem;
-    }
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    .info-item {
-      background-color: #f9f9f9;
-      padding: 0.8rem;
-      border-radius: 4px;
-      border: 1px solid #eee;
-    }
-    .info-label {
-      font-weight: bold;
-      color: var(--secondary-color);
-      display: block;
-      margin-bottom: 0.3rem;
-    }
-    .info-value {
-      color: var(--text-color);
-    }
-    .dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 2rem;
-        background-color: var(--dark-color);
-        color: var(--text-light);
-    }
-    .dashboard-header .header-content h1,
-    .dashboard-header .header-content p {
-        margin: 0;
-    }
-    .dashboard-container {
-        padding: 1.5rem;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-    .section-header h2 {
-        margin: 0;
-        color: var(--primary-color);
-    }
-    .icon-user::before { content: "👤"; margin-right: 8px; }
-    .icon-patients::before { content: "👥"; margin-right: 8px; }
-  </style>
 </head>
 <body>
   <header class="dashboard-header">
     <div class="header-content">
-      <h1>Dr(a). <span id="doctorName">Carregando...</span></h1>
-      <p id="doctorSpecialty">Especialidade</p>
+      <h1>Bem-vindo, Dr. <span id="doctorName"></span></h1>
+      <p id="doctorSpecialty"></p>
     </div>
     <button id="logoutBtn" class="btn logout-btn">Sair</button>
   </header>
   
   <main class="dashboard-container">
-    <section class="doctor-info-section card">
-      <h2><i class="icon-user"></i>Suas Informações</h2>
-      <div id="doctorInfo" class="info-grid">
-        <p class="loading-text">Carregando informações...</p>
+    <section class="dashboard-section">
+      <div class="card user-info-card">
+        <div class="section-header">
+            <h2>Informações Pessoais</h2>
+        </div>
+        <div id="doctorInfo" class="info-grid"></div>
       </div>
     </section>
 
-    <section class="patients-list-section card">
-      <div class="section-header">
-        <h2><i class="icon-patients"></i>Pacientes Cadastrados</h2>
-        <button id="refreshPatientsBtn" class="btn small-btn">Atualizar Lista</button>
-      </div>
-      <div id="allPatientsList" class="patients-list-container">
-        <p class="loading-text">Carregando lista de pacientes...</p>
+    <section class="dashboard-section">
+      <div class="card">
+        <div class="section-header">
+          <h2>Todos os Pacientes Cadastrados</h2>
+          <button id="refreshAllPatientsBtn" class="btn btn-secondary small-btn">Atualizar Lista</button>
         </div>
+        <div id="allPatientsList" class="list-container">
+          </div>
+      </div>
     </section>
   </main>
+
+  <div id="appointmentModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close-btn" id="closeAppointmentModalBtn">&times;</span>
+        <h2>Marcar Consulta para <span id="modalPatientNameAppt"></span></h2>
+      </div>
+      <div class="form-group">
+        <label for="appointmentDate">Data e Hora da Consulta:</label>
+        <input type="datetime-local" id="appointmentDate" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="appointmentReason">Motivo da Consulta:</label>
+        <textarea id="appointmentReason" class="form-control" rows="3" required></textarea>
+      </div>
+      <div class="modal-footer">
+        <button id="cancelAppointmentBtn" class="btn btn-secondary">Cancelar</button>
+        <button id="saveAppointmentBtn" class="btn btn-primary">Salvar Consulta</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="fileUploadModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close-btn" id="closeFileUploadModalBtn">&times;</span>
+        <h2>Upload de Arquivo para <span id="modalPatientNameFile"></span></h2>
+      </div>
+      <div class="form-group">
+        <label for="fileInput">Selecionar Arquivo:</label>
+        <input type="text" id="selectedFilePath" class="form-control" readonly placeholder="Nenhum arquivo selecionado">
+        <button id="browseFileBtn" class="btn btn-info" style="margin-top: 5px;">Procurar Arquivo</button>
+      </div>
+      <div class="form-group">
+        <label for="fileDescription">Descrição (opcional):</label>
+        <input type="text" id="fileDescription" class="form-control">
+      </div>
+      <div class="modal-footer">
+        <button id="cancelFileUploadBtn" class="btn btn-secondary">Cancelar</button>
+        <button id="saveFileUploadBtn" class="btn btn-primary">Salvar Arquivo</button>
+      </div>
+    </div>
+  </div>
 
   <script src="dashboard.js"></script>
 </body>

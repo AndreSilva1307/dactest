@@ -1,85 +1,19 @@
-/* reset.css - Define um ponto de partida consistente para estilos */
-
-/* Remove margens e preenchimentos padrão */
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit; /* Garante que a herança de fontes funcione como esperado */
-  vertical-align: baseline;
-  box-sizing: border-box; /* Modelo de caixa universal */
-}
-
-/* HTML5 display-role reset para navegadores mais antigos */
-article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
-  display: block;
-}
-
-/* Define a altura da linha base */
-body {
-  line-height: 1;
-}
-
-/* Remove estilos de lista padrão */
-ol, ul {
-  list-style: none;
-}
-
-/* Remove aspas de blockquotes e q */
-blockquote, q {
-  quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-  content: '';
-  content: none;
-}
-
-/* Remove bordas de tabelas (se não redefinidas) */
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-/* Garante que elementos de formulário herdem a fonte */
-input, button, textarea, select {
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  box-sizing: border-box;
-}
-
-/* Remove a aparência padrão de alguns navegadores para botões */
-button {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-}
-
-/* Remove sublinhado padrão de links */
-a {
-  text-decoration: none;
-  color: inherit; /* Links herdam a cor do texto pai por padrão */
-}
-
-/* Imagens responsivas por padrão */
-img {
-  max-width: 100%;
-  height: auto;
-  display: block; /* Remove espaço extra abaixo da imagem */
-}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: #f5f5f5;
+  }
+  
+  a {
+    text-decoration: none;
+  }
+  
+  ul {
+    list-style: none;
+  }

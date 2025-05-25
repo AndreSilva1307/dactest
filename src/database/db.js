@@ -1,108 +1,59 @@
 // Importa os módulos necessários
-const Datastore = require('nedb') 
-const path = require('path') 
-const bcrypt = require('bcryptjs') 
+const Datastore = require('nedb') // Banco de dados embutido
+const path = require('path') // Para manipulação de caminhos de arquivos
+const bcrypt = require('bcryptjs') // Para criptografia de senhas
 
 // Configuração do banco de dados NeDB
 const db = {
+  // Coleção de usuários (armazena credenciais de login)
   users: new Datastore({ 
-    filename: path.join(app.getPath('userData'), 'databases', 'users.db'), // Salvar dentro da pasta de dados do app
-    autoload: true 
+    filename: path.join(__dirname, 'users.db'), // Arquivo de armazenamento
+    autoload: true // Carrega automaticamente o banco de dados
   }),
+  
+  // Coleção de pacientes (armazena dados específicos)
   patients: new Datastore({ 
-    filename: path.join(app.getPath('userData'), 'databases', 'patients.db'),
+    filename: path.join(__dirname, 'patients.db'),
     autoload: true 
   }),
+  
+  // Coleção de médicos (armazena dados específicos)
   doctors: new Datastore({ 
-    filename: path.join(app.getPath('userData'), 'databases', 'doctors.db'),
+    filename: path.join(__dirname, 'doctors.db'),
     autoload: true 
   }),
+
+  // Nova coleção para agendamentos
   appointments: new Datastore({
-    filename: path.join(app.getPath('userData'), 'databases', 'appointments.db'),
+    filename: path.join(__dirname, 'appointments.db'),
     autoload: true
   }),
-  medical_files: new Datastore({
-    filename: path.join(app.getPath('userData'), 'databases', 'medical_files.db'),
+
+  // Nova coleção para arquivos de pacientes
+  patientFiles: new Datastore({
+    filename: path.join(__dirname, 'patientFiles.db'),
     autoload: true
   })
-};
-
-// Função para garantir que o diretório de bancos de dados exista
-function ensureDatabaseDirectory() {
-    const dbDir = path.join(app.getPath('userData'), 'databases');
-    if (!require('fs').existsSync(dbDir)) {
-        require('fs').mkdirSync(dbDir, { recursive: true });
-        console.log('Diretório de bancos de dados criado em:', dbDir);
-    }
 }
 
-// Chamar a função para garantir o diretório ANTES de carregar os Datastores
-// Isso precisa ser feito de uma forma que 'app' esteja disponível.
-// A melhor forma é fazer isso após o 'app.whenReady()', mas os Datastores são inicializados globalmente.
-// Uma alternativa é inicializar os Datastores dentro de uma função chamada após app.whenReady().
-// Por simplicidade aqui, vamos assumir que o diretório será criado se não existir
-// na primeira vez que o NeDB tentar escrever. Mas o ideal é garantir antes.
-// Para este exemplo, vamos manter a criação do diretório aqui, mas note que app.getPath
-// pode não estar disponível imediatamente na carga do módulo se este arquivo for importado muito cedo.
-// Uma solução mais robusta seria inicializar os DBs em uma função chamada de main.js após 'app.isReady'.
+// Cria índices únicos para otimização e integridade dos dados
+db.users.ensureIndex({ fieldName: 'email', unique: true }) // Email único para usuários
+db.patients.ensureIndex({ fieldName: 'userId', unique: true }) // Relação 1:1 com users
+db.doctors.ensureIndex({ fieldName: 'userId', unique: true }) // Relação 1:1 com users
+db.appointments.ensureIndex({ fieldName: 'patientId' }) // Para buscar consultas por paciente
+db.appointments.ensureIndex({ fieldName: 'doctorId' })  // Para buscar consultas por médico
+db.patientFiles.ensureIndex({ fieldName: 'patientId' }) // Para buscar arquivos por paciente
+db.patientFiles.ensureIndex({ fieldName: 'doctorId' })  // Para buscar arquivos por médico
 
-// No entanto, para NeDB, ele cria o arquivo (e diretório se necessário) no primeiro 'insert' se não existir.
-// Então, a criação explícita do diretório pode não ser estritamente necessária para NeDB, mas é boa prática.
-// Vamos remover a chamada a `ensureDatabaseDirectory()` daqui para evitar problemas com `app.getPath()`
-// e confiar que NeDB criará os arquivos. Se houver problemas de permissão, isso precisará ser revisto.
+// Função para criptografar senhas (usando salt automático com custo 10)
+const hashPassword = (password) => bcrypt.hash(password, 10)
 
-
-// Cria índices para otimização e integridade dos dados
-// É bom chamar ensureIndex após o autoload ter completado.
-// Pode-se envolver isso em callbacks ou Promises se o autoload for assíncrono e demorado.
-db.users.ensureIndex({ fieldName: 'email', unique: true }, (err) => {
-    if (err) console.error("Erro ao criar índice em users.email:", err);
-});
-db.patients.ensureIndex({ fieldName: 'userId', unique: true }, (err) => {
-    if (err) console.error("Erro ao criar índice em patients.userId:", err);
-});
-db.doctors.ensureIndex({ fieldName: 'userId', unique: true }, (err) => {
-    if (err) console.error("Erro ao criar índice em doctors.userId:", err);
-});
-
-// Índices para appointments
-db.appointments.ensureIndex({ fieldName: 'doctorUserId' }, (err) => {
-    if (err) console.error("Erro ao criar índice em appointments.doctorUserId:", err);
-});
-db.appointments.ensureIndex({ fieldName: 'patientUserId' }, (err) => {
-    if (err) console.error("Erro ao criar índice em appointments.patientUserId:", err);
-});
-db.appointments.ensureIndex({ fieldName: 'appointmentDate' }, (err) => {
-    if (err) console.error("Erro ao criar índice em appointments.appointmentDate:", err);
-});
-
-// Índices para medical_files
-db.medical_files.ensureIndex({ fieldName: 'patientUserId' }, (err) => {
-    if (err) console.error("Erro ao criar índice em medical_files.patientUserId:", err);
-});
-db.medical_files.ensureIndex({ fieldName: 'uploadedByDoctorId' }, (err) => {
-    if (err) console.error("Erro ao criar índice em medical_files.uploadedByDoctorId:", err);
-});
-db.medical_files.ensureIndex({ fieldName: 'uploadDate' }, (err) => {
-    if (err) console.error("Erro ao criar índice em medical_files.uploadDate:", err);
-});
-
-
-// Função para criptografar senhas
-const hashPassword = async (password) => {
-  if (!password) throw new Error("Senha não pode ser vazia para hash.");
-  return bcrypt.hash(password, 10); // bcrypt.hash é assíncrono
-};
-
-// Função para comparar senhas
-const comparePassword = async (candidatePassword, hash) => {
-  if (!candidatePassword || !hash) return false; // Evita erro se um dos valores for nulo/undefined
-  return bcrypt.compare(candidatePassword, hash); // bcrypt.compare é assíncrono
-};
+// Função para comparar senhas (verifica se a senha bate com o hash)
+const comparePassword = (candidatePassword, hash) => bcrypt.compare(candidatePassword, hash)
 
 // Exporta as configurações e funções para uso em outros módulos
 module.exports = { 
-  db, 
-  hashPassword, 
-  comparePassword 
-};
+  db, // Banco de dados configurado
+  hashPassword, // Função de criptografia
+  comparePassword // Função de verificação
+}
