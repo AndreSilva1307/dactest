@@ -1,0 +1,4 @@
+{"$$indexCreated":{"fieldName":"patientId","unique":false,"sparse":false}}
+{"$$indexCreated":{"fieldName":"doctorId","unique":false,"sparse":false}}
+{"patientId":"JKLCco3RUgXVghEX","doctorId":"PvLWkCGRRRC0ms3h","doctorName":"Medico","patientName":"Paciente","originalPath":"C:\\Users\\andre\\Downloads\\ANEXO C - TCC Pricila.docx (1).pdf","fileName":"ANEXO C - TCC Pricila.docx (1).pdf","description":"E","uploadDate":{"$$date":1748219930281},"_id":"zMwwleTJrns9byYM"}
+{"$$deleted":true,"_id":"zMwwleTJrns9byYM"}

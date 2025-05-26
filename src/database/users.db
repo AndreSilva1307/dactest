@@ -1,3 +1,3 @@
-{"email":"paciente@gmail.com","password":"$2a$10$l83WbjxPDTfAi07xg5kobOCWTSQUn3DpfBJxB7fde/SANBqT5CLdq","userType":"patient","createdAt":{"$$date":1748010525945},"_id":"NJ5R8BTBoOSH5eou"}
-{"email":"medico@gmail.com","password":"$2a$10$Iy60oL1Lx8yF9vU7Z0SnIeEfXdCtKo5yk/veLJGIx3X91PFkQ9ev6","userType":"doctor","createdAt":{"$$date":1748010543313},"_id":"pteRvDNz1yEaJOtq"}
+{"email":"paciente@gmail.com","password":"$2a$10$oPCy.C62u2lg28TBDWWNH.iMQ9NCG2bmXBNK5JgElIVBHWpo7XeHW","userType":"patient","createdAt":{"$$date":1748218408295},"_id":"59IZkUWPIeeSNm7S"}
+{"email":"medico@gmail.com","password":"$2a$10$smelCFeisY0nYEcKSOOd/u34prbek2RsPuQ8qx0lVpsBr9b4hH9FK","userType":"doctor","createdAt":{"$$date":1748218428807},"_id":"WJh5pv5lppSXKyLg"}
 {"$$indexCreated":{"fieldName":"email","unique":true,"sparse":false}}

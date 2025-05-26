@@ -227,15 +227,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else if (currentActionContext.actionType === 'cancelAppointment') {
         if (confirm(`Tem certeza que deseja remover a consulta selecionada para ${currentActionContext.patientName}?`)) {
             try {
-                const result = await window.electronAPI.deleteAppointment(appointmentId);
+                const result = await window.electronAPI.deleteAppointment(appointmentId); //
                 if (result.success) {
-                    alert('Consulta removida com sucesso!');
-                    // Optionally, refresh the patient list or relevant part of UI
+                    alert('Consulta removida com sucesso!'); //
+                    window.electronAPI.triggerUIRefresh('delete-appointment');
                 } else {
-                    alert(`Erro ao remover consulta: ${result.message || 'Erro desconhecido.'}`);
+                    alert(`Erro ao remover consulta: ${result.message || 'Erro desconhecido.'}`); //
                 }
             } catch (error) {
-                console.error("Erro ao remover consulta:", error);
+                console.error("Erro ao remover consulta:", error); //
                 alert('Erro de comunicação ao remover consulta.');
             }
         }
@@ -260,16 +260,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         selectFileModal.style.display = 'block';
         break;
       case 'delete_all':
-        if (confirm(`Tem certeza que deseja remover TODOS os arquivos para o paciente ${patientName}? Esta ação não pode ser desfeita.`)) {
+        if (confirm(`Tem certeza que deseja remover TODOS os arquivos para o paciente ${patientName}? Esta ação não pode ser desfeita.`)) { //
           try {
-            const result = await window.electronAPI.deleteAllPatientFiles(patientId);
+            const result = await window.electronAPI.deleteAllPatientFiles(patientId); //
             if (result.success) {
-              alert(`Todos os arquivos de ${patientName} foram removidos.`);
+              alert(`Todos os arquivos de ${patientName} foram removidos.`); //
+              window.electronAPI.triggerUIRefresh('delete-all-patient-files');
             } else {
-              alert(`Erro ao remover todos os arquivos: ${result.message || 'Erro desconhecido'}`);
+              alert(`Erro ao remover todos os arquivos: ${result.message || 'Erro desconhecido'}`); //
             }
           } catch (error) {
-            console.error('Erro ao remover todos os arquivos:', error);
+            console.error('Erro ao remover todos os arquivos:', error); //
             alert('Erro de comunicação ao remover todos os arquivos.');
           }
         }
@@ -308,18 +309,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const fileId = selectedRadio.value;
 
-    if (confirm(`Tem certeza que deseja remover o arquivo selecionado de ${currentActionContext.patientName}?`)) {
+    if (confirm(`Tem certeza que deseja remover o arquivo selecionado de ${currentActionContext.patientName}?`)) { //
         try {
-            const result = await window.electronAPI.deletePatientFile(fileId);
+            const result = await window.electronAPI.deletePatientFile(fileId); //
             if (result.success) {
-                alert('Arquivo removido com sucesso!');
-                selectFileModal.style.display = 'none';
-                // Optionally, refresh files list or UI
+                alert('Arquivo removido com sucesso!'); //
+                selectFileModal.style.display = 'none'; //
+                window.electronAPI.triggerUIRefresh('delete-patient-file');
             } else {
-                alert(`Erro ao remover arquivo: ${result.message || 'Erro desconhecido.'}`);
+                alert(`Erro ao remover arquivo: ${result.message || 'Erro desconhecido.'}`); //
             }
         } catch (error) {
-            console.error("Erro ao remover arquivo:", error);
+            console.error("Erro ao remover arquivo:", error); //
             alert('Erro de comunicação ao remover arquivo.');
         }
     }
@@ -343,17 +344,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
       let result;
+      let actionTypeForRefresh = '';
       if (appointmentIdToEdit) { // Editing existing appointment
         result = await window.electronAPI.updateAppointment({
           appointmentId: appointmentIdToEdit,
           updates: {
             date: new Date(appointmentDate),
             reason: reason,
-            // You might want to add doctorId, patientId if they could change, or ensure they are part of updates
-            // Also, doctorName, patientName if they are denormalized and could change
           }
         });
-        if (result.success) alert('Consulta alterada com sucesso!');
+        if (result.success) {
+            alert('Consulta alterada com sucesso!'); //
+            actionTypeForRefresh = 'update-appointment';
+        }
 
       } else { // Scheduling new appointment
         result = await window.electronAPI.scheduleAppointment({ //
@@ -364,13 +367,16 @@ document.addEventListener('DOMContentLoaded', async () => {
           appointmentDate: appointmentDate, //
           reason: reason //
         });
-        if (result.success) alert('Consulta marcada com sucesso!'); //
+        if (result.success) {
+            alert('Consulta marcada com sucesso!'); //
+            actionTypeForRefresh = 'schedule-appointment';
+        }
       }
       
       if (result.success) {
         appointmentModal.style.display = 'none'; //
-        editingAppointmentIdInput.value = ''; // Clear editing ID
-        // Optionally refresh parts of the UI if needed
+        editingAppointmentIdInput.value = ''; //
+        window.electronAPI.triggerUIRefresh(actionTypeForRefresh);
       } else {
         alert(`Erro ao salvar consulta: ${result.message}`); //
       }
@@ -409,6 +415,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (result.success) { //
         alert('Arquivo enviado com sucesso!'); //
         fileUploadModal.style.display = 'none'; //
+        window.electronAPI.triggerUIRefresh('upload-patient-file');
       } else {
         alert(`Erro ao enviar arquivo: ${result.message}`); //
       }

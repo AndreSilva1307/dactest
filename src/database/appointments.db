@@ -1,3 +1,10 @@
-{"$$indexCreated":{"fieldName":"doctorUserId","unique":false,"sparse":false}}
-{"$$indexCreated":{"fieldName":"patientUserId","unique":false,"sparse":false}}
-{"$$indexCreated":{"fieldName":"appointmentDate","unique":false,"sparse":false}}
+{"patientId":"JKLCco3RUgXVghEX","doctorId":"PvLWkCGRRRC0ms3h","doctorName":"Medico","patientName":"Paciente","date":{"$$date":1748381400000},"reason":"Consulta","status":"scheduled","createdAt":{"$$date":1748218777313},"_id":"HE2mCFHb6aaVLI8G"}
+{"patientId":"JKLCco3RUgXVghEX","doctorId":"PvLWkCGRRRC0ms3h","doctorName":"Medico","patientName":"Paciente","date":{"$$date":1748277000000},"reason":"Exame","status":"Agendado","createdAt":{"$$date":1748218712332},"_id":"ImwJe7MmzblDt0mC"}
+{"patientId":"JKLCco3RUgXVghEX","doctorId":"PvLWkCGRRRC0ms3h","doctorName":"Medico","patientName":"Paciente","date":{"$$date":1753651500000},"reason":"consilta","status":"scheduled","createdAt":{"$$date":1748219158780},"_id":"aWhLIF0jHEWTdj4Y"}
+{"$$indexCreated":{"fieldName":"patientId","unique":false,"sparse":false}}
+{"$$indexCreated":{"fieldName":"doctorId","unique":false,"sparse":false}}
+{"patientId":"JKLCco3RUgXVghEX","doctorId":"PvLWkCGRRRC0ms3h","doctorName":"Medico","patientName":"Paciente","date":{"$$date":1752604200000},"reason":"Esame","status":"scheduled","createdAt":{"$$date":1748219893159},"_id":"137qA9TchCrV8YkK"}
+{"$$deleted":true,"_id":"137qA9TchCrV8YkK"}
+{"$$deleted":true,"_id":"aWhLIF0jHEWTdj4Y"}
+{"$$deleted":true,"_id":"HE2mCFHb6aaVLI8G"}
+{"patientId":"JKLCco3RUgXVghEX","doctorId":"PvLWkCGRRRC0ms3h","doctorName":"Medico","patientName":"Paciente","date":{"$$date":1748363400000},"reason":"Exame","status":"Agendado","createdAt":{"$$date":1748218712332},"_id":"ImwJe7MmzblDt0mC"}

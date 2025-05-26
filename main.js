@@ -72,6 +72,13 @@ function forceUIRefresh(windowInstance, reason = "generic") {
   }
 }
 
+// Novo listener para o evento 'trigger-ui-refresh'
+ipcMain.on('trigger-ui-refresh', (_, reason) => { //
+  if (mainWindow) {
+    forceUIRefresh(mainWindow, reason); //
+  }
+});
+
 
 /**
  * Handler para o evento de login via IPC
@@ -290,63 +297,63 @@ ipcMain.handle('schedule-appointment', async (_, { patientId, doctorId, doctorNa
 });
 
 // Handler para alterar consulta
-ipcMain.handle('update-appointment', async (_, { appointmentId, updates }) => {
-  console.log('[update-appointment] Iniciado com:', { appointmentId, updates });
+ipcMain.handle('update-appointment', async (_, { appointmentId, updates }) => { //
+  console.log('[update-appointment] Iniciado com:', { appointmentId, updates }); //
   try {
     if (!appointmentId || !updates) {
       return { success: false, message: 'Dados incompletos para alterar consulta.' };
     }
     // Ensure 'date' is a Date object if present in updates
-    if (updates.date) {
-        updates.date = new Date(updates.date);
+    if (updates.date) { //
+        updates.date = new Date(updates.date); //
     }
     const numUpdated = await new Promise((resolve, reject) => {
       // NeDB's update doesn't return the document by default in callback, but number of updated docs
-      db.appointments.update({ _id: appointmentId }, { $set: updates }, {}, (err, numReplaced) => {
+      db.appointments.update({ _id: appointmentId }, { $set: updates }, {}, (err, numReplaced) => { //
         if (err) return reject(err);
         resolve(numReplaced);
       });
     });
 
-    if (numUpdated > 0) {
+    if (numUpdated > 0) { //
       // Fetch the updated document to return it
-       const updatedAppointment = await new Promise((resolve, reject) => {
-           db.appointments.findOne({ _id: appointmentId }, (err, doc) => {
-               if (err) return reject(err);
-               resolve(doc);
+       const updatedAppointment = await new Promise((resolve, reject) => { //
+           db.appointments.findOne({ _id: appointmentId }, (err, doc) => { //
+               if (err) return reject(err); //
+               resolve(doc); //
            });
        });
-      return { success: true, appointment: updatedAppointment };
+      return { success: true, appointment: updatedAppointment }; //
     } else {
-      return { success: false, message: 'Consulta não encontrada para alteração.' };
+      return { success: false, message: 'Consulta não encontrada para alteração.' }; //
     }
   } catch (error) {
-    console.error('[update-appointment] Erro CRÍTICO no handler:', error);
-    return { success: false, message: 'Erro no servidor ao alterar consulta.' };
+    console.error('[update-appointment] Erro CRÍTICO no handler:', error); //
+    return { success: false, message: 'Erro no servidor ao alterar consulta.' }; //
   }
 });
 
 // Handler para remover consulta
-ipcMain.handle('delete-appointment', async (_, appointmentId) => {
-  console.log('[delete-appointment] Iniciado com ID:', appointmentId);
+ipcMain.handle('delete-appointment', async (_, appointmentId) => { //
+  console.log('[delete-appointment] Iniciado com ID:', appointmentId); //
   try {
     if (!appointmentId) {
-      return { success: false, message: 'ID da consulta não fornecido.' };
+      return { success: false, message: 'ID da consulta não fornecido.' }; //
     }
     const numRemoved = await new Promise((resolve, reject) => {
-      db.appointments.remove({ _id: appointmentId }, {}, (err, numRemoved) => {
-        if (err) return reject(err);
+      db.appointments.remove({ _id: appointmentId }, {}, (err, numRemoved) => { //
+        if (err) return reject(err); //
         resolve(numRemoved);
       });
     });
-    if (numRemoved > 0) {
-      return { success: true, message: 'Consulta removida com sucesso.' };
+    if (numRemoved > 0) { //
+      return { success: true, message: 'Consulta removida com sucesso.' }; //
     } else {
-      return { success: false, message: 'Consulta não encontrada para remoção.' };
+      return { success: false, message: 'Consulta não encontrada para remoção.' }; //
     }
   } catch (error) {
-    console.error('[delete-appointment] Erro CRÍTICO no handler:', error);
-    return { success: false, message: 'Erro no servidor ao remover consulta.' };
+    console.error('[delete-appointment] Erro CRÍTICO no handler:', error); //
+    return { success: false, message: 'Erro no servidor ao remover consulta.' }; //
   }
 });
 
@@ -383,62 +390,46 @@ ipcMain.handle('upload-patient-file', async (_, { patientId, doctorId, doctorNam
 });
 
 // Handler para remover um arquivo específico do paciente
-ipcMain.handle('delete-patient-file', async (_, fileId) => {
-  console.log('[delete-patient-file] Iniciado com ID:', fileId);
+ipcMain.handle('delete-patient-file', async (_, fileId) => { //
+  console.log('[delete-patient-file] Iniciado com ID:', fileId); //
   try {
     if (!fileId) {
-      return { success: false, message: 'ID do arquivo não fornecido.' };
+      return { success: false, message: 'ID do arquivo não fornecido.' }; //
     }
-    // Optional: Before removing from DB, you might want to delete the actual file from the filesystem
-    // const fileDoc = await new Promise((resolve, reject) => { 
-    //   db.patientFiles.findOne({ _id: fileId }, (err, doc) => err ? reject(err) : resolve(doc));
-    // });
-    // if (fileDoc && fs.existsSync(fileDoc.originalPath)) {
-    //   fs.unlinkSync(fileDoc.originalPath); // Be careful with this, ensure paths are secure
-    // }
-
     const numRemoved = await new Promise((resolve, reject) => {
-      db.patientFiles.remove({ _id: fileId }, {}, (err, numRemoved) => {
-        if (err) return reject(err);
+      db.patientFiles.remove({ _id: fileId }, {}, (err, numRemoved) => { //
+        if (err) return reject(err); //
         resolve(numRemoved);
       });
     });
-    if (numRemoved > 0) {
-      return { success: true, message: 'Arquivo removido com sucesso.' };
+    if (numRemoved > 0) { //
+      return { success: true, message: 'Arquivo removido com sucesso.' }; //
     } else {
-      return { success: false, message: 'Arquivo não encontrado para remoção.' };
+      return { success: false, message: 'Arquivo não encontrado para remoção.' }; //
     }
   } catch (error) {
-    console.error('[delete-patient-file] Erro CRÍTICO no handler:', error);
-    return { success: false, message: 'Erro no servidor ao remover arquivo.' };
+    console.error('[delete-patient-file] Erro CRÍTICO no handler:', error); //
+    return { success: false, message: 'Erro no servidor ao remover arquivo.' }; //
   }
 });
 
 // Handler para remover todos os arquivos de um paciente
-ipcMain.handle('delete-all-patient-files', async (_, patientId) => {
-  console.log('[delete-all-patient-files] Iniciado para paciente ID:', patientId);
+ipcMain.handle('delete-all-patient-files', async (_, patientId) => { //
+  console.log('[delete-all-patient-files] Iniciado para paciente ID:', patientId); //
   try {
     if (!patientId) {
-      return { success: false, message: 'ID do paciente não fornecido.' };
+      return { success: false, message: 'ID do paciente não fornecido.' }; //
     }
-    // Optional: Find all files to delete them from filesystem first
-    // const files = await new Promise((resolve, reject) => {
-    //   db.patientFiles.find({ patientId }, (err, docs) => err ? reject(err) : resolve(docs));
-    // });
-    // files.forEach(fileDoc => {
-    //   if (fs.existsSync(fileDoc.originalPath)) fs.unlinkSync(fileDoc.originalPath);
-    // });
-
     const numRemoved = await new Promise((resolve, reject) => {
-      db.patientFiles.remove({ patientId: patientId }, { multi: true }, (err, numRemoved) => {
-        if (err) return reject(err);
+      db.patientFiles.remove({ patientId: patientId }, { multi: true }, (err, numRemoved) => { //
+        if (err) return reject(err); //
         resolve(numRemoved);
       });
     });
-    return { success: true, message: `${numRemoved} arquivo(s) removido(s) com sucesso.` };
+    return { success: true, message: `${numRemoved} arquivo(s) removido(s) com sucesso.` }; //
   } catch (error) {
-    console.error('[delete-all-patient-files] Erro CRÍTICO no handler:', error);
-    return { success: false, message: 'Erro no servidor ao remover todos os arquivos.' };
+    console.error('[delete-all-patient-files] Erro CRÍTICO no handler:', error); //
+    return { success: false, message: 'Erro no servidor ao remover todos os arquivos.' }; //
   }
 });
 
