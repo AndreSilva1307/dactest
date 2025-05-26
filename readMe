@@ -1,17 +1,50 @@
-clinica-electron/
-├── main.js                # Configuração principal do Electron
-├── preload.js             # Comunicação entre processos
-├── src/
-│   ├── assets/            # Recursos estáticos
-│   │   └── css/           # Estilos organizados (SMACSS)
-│   ├── database/          # Banco de dados local (NeDB)
-│   ├── pages/             # Telas da aplicação
-│   │   ├── auth/          # Autenticação (login/registro)
-│   │   └── dashboard/     # Área logada (paciente/médico)
-│   └── utils/             # Funções auxiliares
+# ByteBlass - Sistema de Gerenciamento Médico
 
+Sistema desktop para gerenciamento de dados de pacientes e médicos, desenvolvido com Electron.
 
+## Funcionalidades Principais
 
-Sempre que editar o programa fazer o versionamento no package.json
+* **Autenticação:**
+    * Cadastro e Login para Pacientes e Médicos.
+    * Senhas com hash (bcryptjs).
+* **Painel do Paciente:**
+    * Visualizar dados pessoais.
+    * Ver consultas agendadas.
+    * Acessar arquivos médicos.
+* **Painel do Médico:**
+    * Visualizar dados pessoais.
+    * Listar todos os pacientes.
+    * Gerenciar consultas (agendar, alterar, remover).
+    * Gerenciar arquivos de pacientes (upload, remover).
 
-utilize npm install para instalar as dependencias e npm start para rodar o programa
+## Tecnologias
+* Electron
+* Node.js
+* NeDB (banco de dados local)
+* HTML, CSS, JavaScript
+
+## Como Executar
+1.  **Clone o repositório:**
+    ```bash
+    git clone <url-do-seu-repositorio>
+    cd <nome-do-repositorio>
+    ```
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
+3.  **Inicie a aplicação:**
+    ```bash
+    npm start
+    ```
+    (Este comando executa `electron .` conforme `package.json`)
+
+## Banco de Dados
+Utiliza NeDB com as seguintes coleções principais:
+* `users`
+* `patients`
+* `doctors`
+* `appointments`
+* `patientFiles`
+
+Os arquivos do banco de dados (`.db`) são criados em `src/database/`.
