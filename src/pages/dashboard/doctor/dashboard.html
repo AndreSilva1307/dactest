@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard do Médico - ByteBlass</title>
   <link rel="stylesheet" href="../../../assets/css/main.css">
+  <style>
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: 8px; /* Space between select and button */
+      margin-top: 5px;
+    }
+    .action-group select {
+      flex-grow: 1;
+      margin-right: 5px; /* ensure space if gap not supported widely */
+    }
+    .patient-actions-column {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; /* Space between appointment and file action groups */
+    }
+  </style>
 </head>
 <body>
   <header class="dashboard-header">
@@ -41,9 +58,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <span class="close-btn" id="closeAppointmentModalBtn">&times;</span>
-        <h2>Marcar Consulta para <span id="modalPatientNameAppt"></span></h2>
+        <h2><span id="appointmentModalTitle">Marcar Consulta</span> para <span id="modalPatientNameAppt"></span></h2>
       </div>
-      <div class="form-group">
+      <input type="hidden" id="editingAppointmentId"> <div class="form-group">
         <label for="appointmentDate">Data e Hora da Consulta:</label>
         <input type="datetime-local" id="appointmentDate" class="form-control" required>
       </div>
@@ -76,6 +93,36 @@
       <div class="modal-footer">
         <button id="cancelFileUploadBtn" class="btn btn-secondary">Cancelar</button>
         <button id="saveFileUploadBtn" class="btn btn-primary">Salvar Arquivo</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="selectAppointmentModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close-btn" id="closeSelectAppointmentModalBtn">&times;</span>
+        <h2><span id="selectAppointmentTitle">Selecionar Consulta</span> para <span id="modalPatientNameSelectAppt"></span></h2>
+      </div>
+      <div id="appointmentsForSelection" class="list-container" style="max-height: 300px; overflow-y: auto;">
+        </div>
+      <div class="modal-footer">
+        <button id="cancelSelectAppointmentBtn" class="btn btn-secondary">Cancelar</button>
+        <button id="confirmSelectAppointmentBtn" class="btn btn-primary">Confirmar Ação</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="selectFileModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close-btn" id="closeSelectFileModalBtn">&times;</span>
+        <h2>Selecionar Arquivo para Remover de <span id="modalPatientNameSelectFile"></span></h2>
+      </div>
+      <div id="filesForSelection" class="list-container" style="max-height: 300px; overflow-y: auto;">
+        </div>
+      <div class="modal-footer">
+        <button id="cancelSelectFileBtn" class="btn btn-secondary">Cancelar</button>
+        <button id="confirmDeleteFileBtn" class="btn btn-danger">Remover Arquivo</button>
       </div>
     </div>
   </div>
